@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'
-import Header from '../Parts/Header';
-import Body from '../Parts/Body';
+import { Link, useNavigate } from 'react-router-dom'
+import { Context } from '../../index';
+import { useContext } from 'react';
+import Header from '../../Parts/Header/Header';
+import Body from '../../Parts/Body/Body';
 
 const SignUp = () => {
   const loginValid = /^[0-9A-Za-z]{6,}$/
@@ -13,6 +15,8 @@ const SignUp = () => {
   const [loginChecker, setLoginChecker] = useState(true)
   const [passwordChecker, setPasswordChecker] = useState(true)
   const [passwordEquality, setPasswordEquality] = useState(true)
+  const { store } = useContext(Context)
+  const navigate = useNavigate()
 
   const checkForSignUp = (e) => {
     e.preventDefault();
@@ -23,14 +27,12 @@ const SignUp = () => {
       errors.push('noLogin')
       setLoginChecker(false)
     }
-
     if (passwordValid.test(password)) {
       setPasswordChecker(true)
     } else {
       errors.push('noPassword')
       setPasswordChecker(false)
     }
-
     if (!(password === passwordCheck) || passwordCheck === '') {
       setPasswordEquality(false)
       errors.push('notIdentical')
@@ -38,9 +40,11 @@ const SignUp = () => {
       setPasswordEquality(true)
     }
     if (errors.length === 0) {
-      alert('Ну зарегистрировался ты и что?')
+      store.registration(login, password)
+      navigate('/appointment')
     }
   }
+
   return (
     <>
       <Header>
@@ -62,7 +66,7 @@ const SignUp = () => {
           {!passwordEquality ? <p>* Пароли должны совпадать!</p> : ''}
           <input type={'password'} placeholder='Password' onChange={(e) => setPasswordCheck(e.target.value)} />
           <button type="submit">Зарегистрироваться</button>
-          <Link to='/signin'><a>Авторизоваться</a></Link>
+          <Link to='/signin'><a onClick={() => store.changeReg()}>Авторизоваться</a></Link>
         </form>
       </Body>
     </>

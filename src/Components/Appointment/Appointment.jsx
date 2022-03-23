@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from "react";
+import { Context } from '../../index';
+import { useContext } from 'react';
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import moment from 'moment'
 import _ from 'lodash'
-import Header from '../Parts/Header';
-import UnderHeader from '../Parts/UnderHeader';
-import Body from '../Parts/Body';
-import Table from '../Parts/Table';
-import ModalDelete from '../Components/ModalDelete.jsx'
-import ModalEdit from '../Components/ModalEdit.jsx'
+import Header from '../../Parts/Header/Header';
+import UnderHeader from '../../Parts/UnderHeader/UnderHeader';
+import Body from '../../Parts/Body/Body';
+import Table from '../../Parts/Table/Table';
+import ModalDelete from '../ModalDelete/ModalDelete.jsx'
+import UserService from "../../service/UserService";
+import ModalEdit from '../ModalEdit/ModalEdit.jsx'
 
 const Appointment = () => {
-
   const [fio, setFio] = useState('')
   const [doctor, setDoctor] = useState('')
   const [date, setDate] = useState('')
   const [complaint, setComplaint] = useState('')
   const [list, setList] = useState([])
-
-
+  const { store } = useContext(Context)
   const [modalActive, setModalActive] = useState(false)
   const [modalEditActive, setModalEditActive] = useState(false)
   const [idx, setIdx] = useState('')
@@ -30,20 +32,17 @@ const Appointment = () => {
   const [sortField, setSortField] = useState('')
   const [sortWay, setSortWay] = useState('')
   const [filterActive, setFilterActive] = useState(false)
-
+  const navigate = useNavigate()
 
   useEffect(async () => {
-    await axios.get('http://localhost:8000/show').then(res => {
-      setList(res.data);
-
-    });
+    if (!localStorage.getItem('token')) navigate('/signin')
+    const response = await UserService.ActionGetAppointments();
+    setList(response.data);
   }, []);
 
-
   const updateList = async () => {
-    await axios.get('http://localhost:8000/show').then(res => {
+    await axios.get(`http://localhost:8000/show?user_id=${localStorage.getItem('user_id')}`).then(res => {
       setList(res.data);
-
     });
   }
 
@@ -62,20 +61,13 @@ const Appointment = () => {
     }
   }))
 
-
   const filteredArray = [...sortList];
-
   const filterFunction = (arr) => {
-  
     if (filterActive) {
-
       if (dateTo && dateFrom) {
-
         arr = _.filter(filteredArray, (item) =>
           moment(item.date).isBetween(dateFrom, dateTo, 'date', '[]')
         );
-
-
       } else if (dateFrom) {
         arr = _.filter(filteredArray, (item) => moment(item.date).isAfter(dateFrom));
       } else if (dateTo) {
@@ -83,63 +75,18 @@ const Appointment = () => {
       }
       return arr;
     } else {
-
       arr = sortList;
-
       setList(arr)
-
     }
     return arr;
   };
-  // const sorting = (field, way) => {
-  //   if (field) {
-  //     if (field === 'ФИО') {
-  //       if (way === 'По возрастанию') {
-  //         list.sort((a, b) => {
-  //           if (a.fio === b.fio) return 0;
-  //           return (a.fio > b.fio ? 1 : -1);
-  //         })
-  //       } else {
-  //         list.sort((a, b) => {
-  //           if (a.fio === b.fio) return 0;
-  //           return (a.fio > b.fio ? -1 : 1);
-  //         })
-  //       }
-  //     }
-  //     else if (field === 'Врач') {
-  //       if (way === 'По возрастанию') {
-  //         list.sort((a, b) => {
-  //           if (a.doctor === b.doctor) return 0;
-  //           return (a.doctor > b.doctor ? 1 : -1);
-  //         })
-  //       } else {
-  //         list.sort((a, b) => {
-  //           if (a.doctor === b.doctor) return 0;
-  //           return (a.doctor > b.doctor ? -1 : 1);
-  //         })
-  //       }
-  //     }
-  //     else if (field === 'Дата') {
-  //       if (way === 'По возрастанию') {
-  //         list.sort((a, b) => {
-  //           if (a.date === b.date) return 0;
-  //           return (a.date > b.date ? 1 : -1);
-  //         })
-  //       } else {
-  //         list.sort((a, b) => {
-  //           if (a.date === b.date) return 0;
-  //           return (a.date > b.date ? -1 : 1);
-  //         })
-  //       }
-  //     }
-  //   }
-  // }
 
   const addAppointment = async (e) => {
     e.preventDefault()
     if (fio && doctor && date && complaint) {
       //const newList = [...list]
       await axios.post('http://localhost:8000/add', {
+        user_id: localStorage.getItem('user_id'),
         fio: fio,
         doctor: doctor,
         date: date,
@@ -158,7 +105,7 @@ const Appointment = () => {
       <Header>
         <div className="flexWrap">
           <p>Приемы</p>
-          <button>Выход</button>
+          <button onClick={() => store.logout()}>Выход</button>
         </div>
       </Header>
       <UnderHeader>
@@ -213,12 +160,8 @@ const Appointment = () => {
               </> : ''
             }
           </div>
-
-
-
           <div >
             {filterActive && (
-
               <div className="filterWrap">
                 <div>
                   <label>с:</label>
@@ -230,7 +173,6 @@ const Appointment = () => {
                 </div>
                 <button onClick={() => {
                   setList(filterFunction(filteredArray));
-
                 }}>Фильтровать</button>
                 <svg onClick={() => { updateList(); setFilterActive(false) }} width="24" height="30" viewBox="0 0 24 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M2.00004 26.6667C2.00004 28.5 3.50004 30 5.33337 30H18.6667C20.5 30 22 28.5 22 26.6667V6.66667H2.00004V26.6667ZM5.33337 10H18.6667V26.6667H5.33337V10ZM17.8334 1.66667L16.1667 0H7.83337L6.16671 1.66667H0.333374V5H23.6667V1.66667H17.8334Z" fill="black" />
@@ -238,24 +180,6 @@ const Appointment = () => {
               </div>
             )}
           </div>
-
-
-          {/* {filterActive ?
-            <div className="filterWrap">
-              <div>
-                <label>с:</label>
-                <input placeholder='Login' type={'date'} onChange={(e) => setDate(e.target.value)} />
-              </div>
-              <div>
-                <label>по:</label>
-                <input placeholder='Login' type={'date'} onChange={(e) => setDate(e.target.value)} />
-              </div>
-              <button>Фильтровать</button>
-              <svg onClick={() => setFilterActive(false)} width="24" height="30" viewBox="0 0 24 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2.00004 26.6667C2.00004 28.5 3.50004 30 5.33337 30H18.6667C20.5 30 22 28.5 22 26.6667V6.66667H2.00004V26.6667ZM5.33337 10H18.6667V26.6667H5.33337V10ZM17.8334 1.66667L16.1667 0H7.83337L6.16671 1.66667H0.333374V5H23.6667V1.66667H17.8334Z" fill="black" />
-              </svg>
-            </div> : ''
-          } */}
           <table>
             <thead>
               <tr>
@@ -279,13 +203,9 @@ const Appointment = () => {
                 setNewDoctor={setNewDoctor}
                 setNewDate={setNewDate}
                 setNewComplaint={setNewComplaint}
-
               />
-
-
             </tbody>
           </table>
-
           <ModalEdit
             modalEditActive={modalEditActive}
             setModalEditActive={setModalEditActive}

@@ -1,10 +1,33 @@
+import React, { useContext, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import SignUp from './Components/SignUp';
-import SignIn from './Components/SignIn';
-import Appointment from './Components/Appointment';
+import { observer } from 'mobx-react-lite';
+import { Context } from './index';
+import SignUp from './Components/SignUp/SignUp';
+import SignIn from './Components/SignIn/SignIn';
+import Appointment from './Components/Appointment/Appointment';
 import './css/App.scss';
 
 const App = () => {
+  const { store } = useContext(Context);
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+      store.checkAuth();
+    }
+  }, []);
+  if (store.isLoading) {
+    return <div>Загрузка....</div>;
+  }
+  if (!store.isAuth) {
+    if (!store.isReg) {
+      return (
+        <SignIn />
+      )
+    } else {
+      return (
+        <SignUp />
+      )
+    }
+  }
   return (
     <Routes>
       <Route path='/signup' element={<SignUp />} />
@@ -15,4 +38,4 @@ const App = () => {
   );
 }
 
-export default App;
+export default observer(App);

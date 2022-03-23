@@ -1,11 +1,7 @@
-import { React, useState } from 'react';
+import { React } from 'react';
 import axios from 'axios';
-import moment from 'moment'
-// import './css/Modal.scss';
-
 
 const ModalEdit = ({ modalEditActive, setModalEditActive, setList, newFio, newDoctor, newDate, newComplaint, idx, setNewFio, setNewDoctor, setNewDate, setNewComplaint }) => {
-
 
   const onEditClicked = async (_id) => {
     await axios.patch('http://localhost:8000/update', {
@@ -14,10 +10,11 @@ const ModalEdit = ({ modalEditActive, setModalEditActive, setList, newFio, newDo
       doctor: newDoctor,
       date: newDate,
       complaint: newComplaint,
-    }).then(res => { 
+    }).then(res => {
       setList(res.data)
     });
   }
+
   return (
     <div className={modalEditActive ? 'modalWrap active' : 'modalWrap'} onClick={() => setModalEditActive(false)}>
       <div className={modalEditActive ? 'modal active' : 'modal'} onClick={e => e.stopPropagation()}>
@@ -34,7 +31,7 @@ const ModalEdit = ({ modalEditActive, setModalEditActive, setList, newFio, newDo
             <option>Боба</option>
           </select>
           <label>Дата:</label>
-          <input type='date' value={newDate.slice(0, 10)} onChange={(e) =>  setNewDate(e.target.value)} />
+          <input type='date' value={newDate.slice(0, 10)} onChange={(e) => setNewDate(e.target.value)} />
           <label>Жалобы:</label>
           <textarea value={newComplaint} name="" id="" cols="30" rows="10" onChange={(e) => setNewComplaint(e.target.value)}></textarea>
         </div>
@@ -44,7 +41,6 @@ const ModalEdit = ({ modalEditActive, setModalEditActive, setList, newFio, newDo
         </div>
       </div>
     </div>
-
   )
 }
 

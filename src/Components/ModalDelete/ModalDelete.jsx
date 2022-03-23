@@ -1,17 +1,10 @@
 import React from 'react';
 import axios from 'axios';
-// import './css/Modal.scss';
-
-
 
 const ModalDelete = ({ modalActive, setModalActive, setList, idx, list }) => {
-
-
   const onDelClicked = async (id) => {
-
     await axios.delete(`http://localhost:8000/delete?_id=${id}`).then(res => {
       const deletedList = list.filter((element) => element._id !== id)
-
       setList(deletedList)
     });
   }

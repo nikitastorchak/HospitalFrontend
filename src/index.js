@@ -1,14 +1,23 @@
-import React from 'react';
+import React, { createContext } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import Store from './store/store';
 import { BrowserRouter as Router} from 'react-router-dom';
+
+const store = new Store();
+
+export const Context = createContext({
+    store,
+})
 
 ReactDOM.render(
   <Router>
-    <App />
-    </Router>,
+    <Context.Provider value = {{store}}>
+                <App />
+        </Context.Provider>,
+  </Router>,
   document.getElementById('root')
 );
 
@@ -16,3 +25,5 @@ ReactDOM.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
+

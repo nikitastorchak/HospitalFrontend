@@ -1,9 +1,10 @@
 import { React, useState } from 'react';
 import moment from 'moment'
 import axios from 'axios';
+import './Table.scss';
 
-import del from '../del.svg'
-import edit from '../edit.svg'
+import del from '../../del.svg'
+import edit from '../../edit.svg'
 
 
 const Table = ({ setList, sortList, list, setModalEditActive, setModalActive, setIdx, setNewFio, setNewDoctor, setNewDate, setNewComplaint }) => {
