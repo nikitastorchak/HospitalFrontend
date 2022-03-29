@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Context } from '../../index';
 import { useContext } from 'react';
 import Header from '../../Parts/Header/Header';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import Body from '../../Parts/Body/Body';
 
 const SignUp = () => {
@@ -15,10 +17,22 @@ const SignUp = () => {
   const [loginChecker, setLoginChecker] = useState(true)
   const [passwordChecker, setPasswordChecker] = useState(true)
   const [passwordEquality, setPasswordEquality] = useState(true)
+  const [snackText, setSnackText] = useState('')
   const { store } = useContext(Context)
   const navigate = useNavigate()
 
-  const checkForSignUp = (e) => {
+
+
+  const [snackOpen, setSnackOpen] = useState(false);
+  const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
+
+  const handleClose = () => {
+    setSnackOpen(false);
+  };
+
+  const checkForSignUp = async (e) => {
     e.preventDefault();
     setErrors([])
     if (loginValid.test(login)) {
@@ -40,7 +54,12 @@ const SignUp = () => {
       setPasswordEquality(true)
     }
     if (errors.length === 0) {
-      store.registration(login, password)
+      
+      await store.registration(login, password)
+      if(store.isError === 'loginExist'){
+        setSnackText('Пользователь с таким логином уже существует')
+        setSnackOpen(true);
+      }
       navigate('/appointment')
     }
   }
@@ -49,6 +68,12 @@ const SignUp = () => {
     <>
       <Header>
         <p>Зарегистрироваться в системе</p>
+        <Snackbar
+          open={snackOpen}
+          onClose={handleClose}
+        >
+          <Alert severity="error">{snackText}</Alert>
+        </Snackbar>
       </Header>
       <Body>
         <svg width="376" height="376" viewBox="0 0 376 376" fill="none" xmlns="http://www.w3.org/2000/svg">

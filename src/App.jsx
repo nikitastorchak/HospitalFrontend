@@ -8,12 +8,14 @@ import Appointment from './Components/Appointment/Appointment';
 import './css/App.scss';
 
 const App = () => {
+
   const { store } = useContext(Context);
   useEffect(() => {
     if (localStorage.getItem('token')) {
       store.checkAuth();
     }
   }, []);
+
   if (store.isLoading) {
     return <div>Загрузка....</div>;
   }

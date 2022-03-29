@@ -4,11 +4,13 @@ import axios from 'axios';
 import { API_URL } from '../http';
 
 export default class Store {
+
+
     user = {};
     isAuth = false;
     isLoading = false;
     isReg = false;
-
+    isError = '';
     constructor() {
         makeAutoObservable(this);
     }
@@ -19,6 +21,9 @@ export default class Store {
 
     setUser(user) {
         this.user = user;
+    }
+    setError(val) {
+        this.isError = val;
     }
 
     setLoading(bool) {
@@ -40,8 +45,12 @@ export default class Store {
             localStorage.setItem('login', login);
             this.setAuth(true);
             this.setUser(response.data.user);
+            this.setError('')
         } catch (e) {
             console.log(e.response?.data?.message);
+
+            this.setError('loginNoExist')
+            
         }
     }
 
@@ -55,7 +64,7 @@ export default class Store {
             this.setAuth(true);
             this.setUser(response.data.user);
         } catch (e) {
-            alert(`Пользователь с таким логином уже существует ${login}`);
+            this.setError('loginExist')
         }
     }
 
@@ -79,10 +88,8 @@ export default class Store {
             localStorage.setItem('token', response.data.accessToken);
             this.setAuth(true);
             this.setUser(response.data.user);
-            console.log(' sddsdsdsd',this.isAuth)
         } catch (e) {
             console.log(e);
-            console.log(' sddsdsdsd',this.isAuth)
         } finally {
             this.setLoading(false);
         }

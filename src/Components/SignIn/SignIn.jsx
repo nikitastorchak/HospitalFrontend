@@ -5,23 +5,43 @@ import { Context } from '../../index';
 import Header from '../../Parts/Header/Header';
 import Body from '../../Parts/Body/Body';
 import { useContext } from 'react';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+import '../../css/SnackBar.scss';
 
 const SignIn = () => {
   const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
+  const [snackText, setSnackText] = useState('')
   const { store } = useContext(Context)
   const navigate = useNavigate()
+
+
+  const [snackOpen, setSnackOpen] = useState(false);
+  const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
+
+  const handleClose = () => {
+    setSnackOpen(false);
+  };
+
 
   useEffect(async () => {
     if (localStorage.getItem('token')) navigate('/appointment')
   }, []);
 
-  const onClick = (login, password) => {
-    let re = /^(?=.*[0-9])(?=.*[a-zA-Z])[a-zA-Z0-9]{6,16}$/;
-    if (re.test(password) && login.length > 6) {
-      store.login(login, password)
+  const onClick = async (login, password) => {
+    let re = /^(?=.*[0-9])(?=.*[a-zA-Z])[a-zA-Z0-9]{6,16}$/; 
+    if (re.test(password) && login.length > 5) {
+      await store.login(login, password)
+      if(store.isError === 'loginNoExist'){
+        setSnackText('Пользователя с таким логином не существует')
+        setSnackOpen(true);
+      }
     } else {
-      alert('Логин и пароль должны состоять минимум из 6 символов!')
+      setSnackText('Логин и пароль должны содержать минимум 6 символов')
+      setSnackOpen(true);
     }
   };
 
@@ -29,6 +49,12 @@ const SignIn = () => {
     <>
       <Header>
         <p>Войти в систему</p>
+        <Snackbar
+          open={snackOpen}
+          onClose={handleClose}
+        >
+          <Alert severity="error">{snackText}</Alert>
+        </Snackbar>
       </Header>
       <Body>
         <svg width="376" height="376" viewBox="0 0 376 376" fill="none" xmlns="http://www.w3.org/2000/svg">

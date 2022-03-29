@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import moment from 'moment'
 import _ from 'lodash'
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 import Header from '../../Parts/Header/Header';
 import UnderHeader from '../../Parts/UnderHeader/UnderHeader';
 import Body from '../../Parts/Body/Body';
@@ -12,27 +14,43 @@ import Table from '../../Parts/Table/Table';
 import ModalDelete from '../ModalDelete/ModalDelete.jsx'
 import UserService from "../../service/UserService";
 import ModalEdit from '../ModalEdit/ModalEdit.jsx'
+import Constants from '../Constants/Constants.jsx'
+import '../../css/SnackBar.scss';
 
 const Appointment = () => {
-  const [fio, setFio] = useState('')
-  const [doctor, setDoctor] = useState('')
-  const [date, setDate] = useState('')
-  const [complaint, setComplaint] = useState('')
+  const [appoint, setAppoint] = useState({
+    fio: '', 
+    doctor: '', 
+    date: '', 
+    complaint: '', 
+  })
   const [list, setList] = useState([])
   const { store } = useContext(Context)
   const [modalActive, setModalActive] = useState(false)
   const [modalEditActive, setModalEditActive] = useState(false)
   const [idx, setIdx] = useState('')
-  const [newFio, setNewFio] = useState('')
-  const [newDoctor, setNewDoctor] = useState('')
-  const [newDate, setNewDate] = useState('')
-  const [newComplaint, setNewComplaint] = useState('')
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const [sortField, setSortField] = useState('')
   const [sortWay, setSortWay] = useState('')
   const [filterActive, setFilterActive] = useState(false)
+  const url = 'http://localhost:8000'
   const navigate = useNavigate()
+  const [snackOpen, setSnackOpen] = useState(false);
+  const Alert = React.forwardRef(function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  });
+
+  const buildAppoint = (value, type) => {
+  
+    const newAppoint = {...appoint};
+    newAppoint[type] = value;
+    setAppoint(newAppoint)
+  }
+
+  const handleClose = () => {
+    setSnackOpen(false);
+  };
 
   useEffect(async () => {
     if (!localStorage.getItem('token')) navigate('/signin')
@@ -41,7 +59,7 @@ const Appointment = () => {
   }, []);
 
   const updateList = async () => {
-    await axios.get(`http://localhost:8000/show?user_id=${localStorage.getItem('user_id')}`).then(res => {
+    await axios.get(`${url}/show?user_id=${localStorage.getItem('user_id')}`).then(res => {
       setList(res.data);
     });
   }
@@ -79,27 +97,33 @@ const Appointment = () => {
       setList(arr)
     }
     return arr;
-  };
-
+  }
+  
   const addAppointment = async (e) => {
-    e.preventDefault()
-    if (fio && doctor && date && complaint) {
-      //const newList = [...list]
-      await axios.post('http://localhost:8000/add', {
+    e.preventDefault();
+    if (appoint.fio && appoint.doctor && appoint.date && appoint.complaint) {
+      await axios.post(`${url}/add`, {
         user_id: localStorage.getItem('user_id'),
-        fio: fio,
-        doctor: doctor,
-        date: date,
-        complaint: complaint
+        fio: appoint.fio,
+        doctor: appoint.doctor,
+        date: appoint.date,
+        complaint: appoint.complaint
       }).then(res => {
         const newList = [...list]
         newList.push(res.data)
         setList(newList)
       });
+       setAppoint({
+        fio: '', 
+        doctor: '', 
+        date: '', 
+        complaint: '', 
+      })
     } else {
-      alert('Вы ввели не все поля!');
+      setSnackOpen(true);
     }
   }
+
   return (
     <>
       <Header>
@@ -111,25 +135,33 @@ const Appointment = () => {
       <UnderHeader>
         <div className='inputWrap'>
           <label>Имя:</label>
-          <input placeholder='Login' onChange={(e) => setFio(e.target.value)} />
+          <input type='fio' name='fio' value={appoint.fio} placeholder='ФИО' onChange={(e) => buildAppoint(e.target.value, 'fio')} />
         </div>
         <div className='inputWrap'>
           <label>Врач:</label>
-          <select onChange={(e) => setDoctor(e.target.value)}>
-            <option ></option>
-            <option >Биба</option>
-            <option>Боба</option>
+          <select type='doctor' name='doctor' value={appoint.doctor} onChange={(e) => buildAppoint(e.target.value, 'doctor')}>
+            <option></option>
+            <Constants/>
           </select>
         </div>
         <div className='inputWrap'>
           <label>Дата:</label>
-          <input placeholder='Дата' type={'date'} onChange={(e) => setDate(e.target.value)} />
+          <input type='date' name='date' value={appoint.date} placeholder='Дата' onChange={(e) => buildAppoint(e.target.value, 'date')} />
         </div>
         <div className='inputWrap'>
           <label>Жалобы:</label>
-          <input placeholder='Жалобы' onChange={(e) => setComplaint(e.target.value)} />
+          <input type='complaint' name='complaint' value={appoint.complaint} placeholder='Жалобы' onChange={(e) => buildAppoint(e.target.value, 'complaint')} />
         </div>
-        <button type='submit' onClick={addAppointment}>Добавить</button>
+        <button type='submit' onClick={addAppointment} >Добавить</button>
+        <div>
+      <Snackbar
+        open={snackOpen}
+        onClose={handleClose}
+      >
+        <Alert severity="error">Вы ввели не все поля!</Alert>
+      </Snackbar>
+    </div>
+
       </UnderHeader>
       <Body>
         <div className="wrapper">
@@ -199,10 +231,8 @@ const Appointment = () => {
                 setModalActive={setModalActive}
                 setIdx={setIdx}
                 filteredArray={filteredArray}
-                setNewFio={setNewFio}
-                setNewDoctor={setNewDoctor}
-                setNewDate={setNewDate}
-                setNewComplaint={setNewComplaint}
+                appoint={appoint}
+                setAppoint={setAppoint}
               />
             </tbody>
           </table>
@@ -212,14 +242,8 @@ const Appointment = () => {
             setList={setList}
             list={list}
             idx={idx}
-            newFio={newFio}
-            newDoctor={newDoctor}
-            newDate={newDate}
-            newComplaint={newComplaint}
-            setNewFio={setNewFio}
-            setNewDoctor={setNewDoctor}
-            setNewDate={setNewDate}
-            setNewComplaint={setNewComplaint}
+            appoint={appoint}
+            setAppoint={setAppoint}
           />
           <ModalDelete
             modalActive={modalActive}
@@ -227,10 +251,7 @@ const Appointment = () => {
             setList={setList}
             list={list}
             idx={idx}
-            fio={fio}
-            doctor={doctor}
-            date={date}
-            complaint={complaint}
+            appoint={appoint}
           />
         </div>
       </Body>
