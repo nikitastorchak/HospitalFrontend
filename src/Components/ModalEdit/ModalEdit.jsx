@@ -1,6 +1,6 @@
 import { React } from 'react';
 import axios from 'axios';
-import Constants from '../Constants/Constants.jsx'
+import Constants from '../Constants/Constants.jsx';
 
 const ModalEdit = ({ modalEditActive, setModalEditActive, setList, idx, setAppoint, appoint}) => {
 
@@ -13,21 +13,21 @@ const ModalEdit = ({ modalEditActive, setModalEditActive, setList, idx, setAppoi
       date: appoint.date,
       complaint: appoint.complaint,
     }).then(res => {
-      setList(res.data)
+      setList(res.data);
     });
     setAppoint({
       fio: '', 
       doctor: '', 
       date: '', 
       complaint: '', 
-    })
-  }
+    });
+  };
+
   const buildAppoint = (value, type) => {
-  
     const newAppoint = {...appoint};
     newAppoint[type] = value;
-    setAppoint(newAppoint)
-  }
+    setAppoint(newAppoint);
+  };
 
   return (
     <div className={modalEditActive ? 'modalWrap active' : 'modalWrap'} onClick={() => setModalEditActive(false)}>

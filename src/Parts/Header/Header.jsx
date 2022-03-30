@@ -1,8 +1,6 @@
 import React from "react";
 import './Header.scss';
 
-
-
 const Header = ({children}) => {
   return (
     <div className='headerWrap'>
@@ -13,7 +11,6 @@ const Header = ({children}) => {
         {children}
       </div>
     </div>
-    
   )
 }
 

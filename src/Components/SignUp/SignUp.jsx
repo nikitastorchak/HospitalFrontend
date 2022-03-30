@@ -8,20 +8,18 @@ import MuiAlert from '@mui/material/Alert';
 import Body from '../../Parts/Body/Body';
 
 const SignUp = () => {
-  const loginValid = /^[0-9A-Za-z]{6,}$/
-  const passwordValid = /^.*(?=.{6,})(?=.*\d)(?=.*[a-z]).*$/
-  const [login, setLogin] = useState('')
-  const [password, setPassword] = useState('')
-  const [passwordCheck, setPasswordCheck] = useState('')
-  const [errors, setErrors] = useState([])
-  const [loginChecker, setLoginChecker] = useState(true)
-  const [passwordChecker, setPasswordChecker] = useState(true)
-  const [passwordEquality, setPasswordEquality] = useState(true)
-  const [snackText, setSnackText] = useState('')
-  const { store } = useContext(Context)
-  const navigate = useNavigate()
-
-
+  const loginValid = /^[0-9A-Za-z]{6,}$/;
+  const passwordValid = /^.*(?=.{6,})(?=.*\d)(?=.*[a-z]).*$/;
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordCheck, setPasswordCheck] = useState('');
+  const [errors, setErrors] = useState([]);
+  const [loginChecker, setLoginChecker] = useState(true);
+  const [passwordChecker, setPasswordChecker] = useState(true);
+  const [passwordEquality, setPasswordEquality] = useState(true);
+  const [snackText, setSnackText] = useState('');
+  const { store } = useContext(Context);
+  const navigate = useNavigate();
 
   const [snackOpen, setSnackOpen] = useState(false);
   const Alert = React.forwardRef(function Alert(props, ref) {
@@ -57,12 +55,12 @@ const SignUp = () => {
       
       await store.registration(login, password)
       if(store.isError === 'loginExist'){
-        setSnackText('Пользователь с таким логином уже существует')
+        setSnackText('Пользователь с таким логином уже существует');
         setSnackOpen(true);
       }
-      navigate('/appointment')
-    }
-  }
+      navigate('/appointment');
+    };
+  };
 
   return (
     <>

@@ -1,10 +1,7 @@
 import React from "react";
 import './UnderHeader.scss';
 
-
-
 const UnderHeader = ({children}) => {
-
 
   return (
     <div className='underHeaderWrap'>
@@ -12,7 +9,6 @@ const UnderHeader = ({children}) => {
         {children}
       </div>
     </div>
-    
   )
 }
 

@@ -3,8 +3,8 @@ import { Context } from '../../index';
 import { useContext } from 'react';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
-import moment from 'moment'
-import _ from 'lodash'
+import moment from 'moment';
+import _ from 'lodash';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import Header from '../../Parts/Header/Header';
@@ -13,8 +13,8 @@ import Body from '../../Parts/Body/Body';
 import Table from '../../Parts/Table/Table';
 import ModalDelete from '../ModalDelete/ModalDelete.jsx'
 import UserService from "../../service/UserService";
-import ModalEdit from '../ModalEdit/ModalEdit.jsx'
-import Constants from '../Constants/Constants.jsx'
+import ModalEdit from '../ModalEdit/ModalEdit.jsx';
+import Constants from '../Constants/Constants.jsx';
 import '../../css/SnackBar.scss';
 
 const Appointment = () => {
@@ -23,30 +23,29 @@ const Appointment = () => {
     doctor: '', 
     date: '', 
     complaint: '', 
-  })
-  const [list, setList] = useState([])
-  const { store } = useContext(Context)
-  const [modalActive, setModalActive] = useState(false)
-  const [modalEditActive, setModalEditActive] = useState(false)
-  const [idx, setIdx] = useState('')
-  const [dateFrom, setDateFrom] = useState('')
-  const [dateTo, setDateTo] = useState('')
-  const [sortField, setSortField] = useState('')
-  const [sortWay, setSortWay] = useState('')
-  const [filterActive, setFilterActive] = useState(false)
-  const url = 'http://localhost:8000'
-  const navigate = useNavigate()
+  });
+  const [list, setList] = useState([]);
+  const { store } = useContext(Context);
+  const [modalActive, setModalActive] = useState(false);
+  const [modalEditActive, setModalEditActive] = useState(false);
+  const [idx, setIdx] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [sortField, setSortField] = useState('');
+  const [sortWay, setSortWay] = useState('');
+  const [filterActive, setFilterActive] = useState(false);
+  const url = 'http://localhost:8000';
+  const navigate = useNavigate();
   const [snackOpen, setSnackOpen] = useState(false);
   const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
   });
 
   const buildAppoint = (value, type) => {
-  
     const newAppoint = {...appoint};
     newAppoint[type] = value;
-    setAppoint(newAppoint)
-  }
+    setAppoint(newAppoint);
+  };
 
   const handleClose = () => {
     setSnackOpen(false);
@@ -62,21 +61,21 @@ const Appointment = () => {
     await axios.get(`${url}/show?user_id=${localStorage.getItem('user_id')}`).then(res => {
       setList(res.data);
     });
-  }
+  };
 
   const sortList = ([...list].sort((a, b) => {
     if (!sortField) {
       return 0;
-    }
+    };
     if (sortWay === 'asc') {
       if (sortField) {
         if (a[sortField] === b[sortField]) return 0;
         return a[sortField] > b[sortField] ? 1 : -1;
-      }
+      };
     } else {
       if (a[sortField] === b[sortField]) return 0;
       return a[sortField] > b[sortField] ? -1 : 1;
-    }
+    };
   }))
 
   const filteredArray = [...sortList];
@@ -90,14 +89,14 @@ const Appointment = () => {
         arr = _.filter(filteredArray, (item) => moment(item.date).isAfter(dateFrom));
       } else if (dateTo) {
         arr = _.filter(filteredArray, (item) => moment(item.date).isBefore(dateTo));
-      }
+      };
       return arr;
     } else {
       arr = sortList;
-      setList(arr)
-    }
+      setList(arr);
+    };
     return arr;
-  }
+  };
   
   const addAppointment = async (e) => {
     e.preventDefault();
@@ -118,11 +117,11 @@ const Appointment = () => {
         doctor: '', 
         date: '', 
         complaint: '', 
-      })
+      });
     } else {
       setSnackOpen(true);
-    }
-  }
+    };
+  };
 
   return (
     <>

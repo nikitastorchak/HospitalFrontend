@@ -5,11 +5,10 @@ import del from '../../del.svg'
 import edit from '../../edit.svg'
 
 const Table = ({ sortList, setModalEditActive, setModalActive, setIdx, setNewAppoint, setAppoint, appoint }) => {
-
   const newAppoint = {...appoint};
   const buildAppoint = (value, type) => {
     newAppoint[type] = value;
-  }
+  };
 
   return (
     <>

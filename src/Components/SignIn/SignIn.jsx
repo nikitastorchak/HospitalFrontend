@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { observer } from 'mobx-react-lite';
 import { Link, useNavigate } from 'react-router-dom'
-import { Context } from '../../index';
-import Header from '../../Parts/Header/Header';
-import Body from '../../Parts/Body/Body';
 import { useContext } from 'react';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import { Context } from '../../index';
+import Header from '../../Parts/Header/Header';
+import Body from '../../Parts/Body/Body';
 import '../../css/SnackBar.scss';
 
 const SignIn = () => {
-  const [login, setLogin] = useState('')
-  const [password, setPassword] = useState('')
-  const [snackText, setSnackText] = useState('')
-  const { store } = useContext(Context)
-  const navigate = useNavigate()
-
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
+  const [snackText, setSnackText] = useState('');
+  const { store } = useContext(Context);
+  const navigate = useNavigate();
 
   const [snackOpen, setSnackOpen] = useState(false);
   const Alert = React.forwardRef(function Alert(props, ref) {
@@ -25,7 +24,6 @@ const SignIn = () => {
   const handleClose = () => {
     setSnackOpen(false);
   };
-
 
   useEffect(async () => {
     if (localStorage.getItem('token')) navigate('/appointment')
@@ -38,11 +36,11 @@ const SignIn = () => {
       if(store.isError === 'loginNoExist'){
         setSnackText('Пользователя с таким логином не существует')
         setSnackOpen(true);
-      }
+      };
     } else {
       setSnackText('Логин и пароль должны содержать минимум 6 символов')
       setSnackOpen(true);
-    }
+    };
   };
 
   return (
